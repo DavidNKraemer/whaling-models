@@ -19,10 +19,13 @@ K2 = 400000;
 a1 = 1e-8;
 a2 = 1e-8;
 
+x0 = 1.3807e+05;
+y0 = 3.9310e+05;
+
 f = @(t,x) [r1*x(1) * (1 - x(1) / K1) - a1 * x(1) * x(2); ...
     r2 * x(2) * (1 - x(2) / K2) - a2 * x(1) * x(2)];
 
-[t, xa] = ode45(f, [0 100], [10000 10000]);
+[t, xa] = ode45(f, [0 100], [x0 y0]);
 
 plot(t, xa(:,1)); hold on
 plot(t, xa(:,2));
@@ -31,7 +34,19 @@ xlabel('time'), ylabel('Population'); hold off
 
 figure();
 
-plot(t(2:end), diff(xa(:,1))); hold on
-plot(t(2:end), diff(xa(:,2)));
+plot(t(2:end), diff(xa(:,1)) / xa(1:end-1,1)); hold on
+plot(t(2:end), diff(xa(:,2)) / xa(1:end-1,2));
+title('Change in Whale Population');
+xlabel('time'), ylabel('Change in Population'); hold off
+
+figure();
+
+plot(t, xa(:,1) + xa(:,2)); hold on
+title('Whale Population');
+xlabel('time'), ylabel('Population'); hold off
+
+figure();
+
+plot(t(2:end), diff(xa(:,1) + xa(:,2)) / (xa(1:end-1,1) + xa(1:end-1,2))); hold on
 title('Change in Whale Population');
 xlabel('time'), ylabel('Change in Population'); hold off
