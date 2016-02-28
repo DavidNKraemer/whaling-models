@@ -1,6 +1,3 @@
-% Overwrite functions?
-ow = 1;
-
 syms x y;
 syms r1 r2 a1 a2 K1 K2;
 
@@ -40,11 +37,5 @@ for i = 1:6
     % reset and repeat!
     unused = [];
     float_unused = [];
-
-    if ow
-        func_str = sprintf('part-1-sensitivity/solution_sensitivity_%s.m',char(vars(i)));
-        matlabFunction(sensitivity{i}, 'File',func_str);
-    end
-
 end
 
