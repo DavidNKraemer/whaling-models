@@ -41,6 +41,7 @@ for i = 1:6
     unused = [];
     float_unused = [];
 
+    % write to function format
     if ow
         func_str = sprintf('part-1-sensitivity/solution_sensitivity_%s.m',char(vars(i)));
         matlabFunction(sensitivity{i}, 'File',func_str);
