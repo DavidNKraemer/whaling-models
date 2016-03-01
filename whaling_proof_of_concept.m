@@ -25,24 +25,24 @@ a2 = 1e-8;
 % x0 = 8e+3;
 % y0 = 5.5e+4;
 x0 = 15000;
-y0 = 0;
+y0 = 8000;
 
 % percent of whale populations that are killed each year
-b1 = 0;
-b2 = 0;
+b1 = 1;
+b2 = 1;
 
 % revenue from a killed whale
 p1 = 12000;
 p2 = 6000;
 
-years = 100;
+years = 500;
 
 % ODE specified above
-% f = @(t,x) [r1*x(1) * (1 - x(1) / K1) - a1 * x(1) * x(2) - b1 * x(1); ...
-%     r2 * x(2) * (1 - x(2) / K2) - a2 * x(1) * x(2) - b2 * x(2)];
+f = @(t,x) [r1*x(1) * (1 - x(1) / K1) - a1 * x(1) * x(2) - b1 * x(1); ...
+    r2 * x(2) * (1 - x(2) / K2) - a2 * x(1) * x(2) - b2 * x(2)];
 
-f = @(t,x) [r1*x(1) * (1 - x(1) / K1) - a1 * x(1) * x(2) - b1; ...
-    r2 * x(2) * (1 - x(2) / K2) - a2 * x(1) * x(2) - b2];
+% f = @(t,x) [r1*x(1) * (1 - x(1) / K1) - a1 * x(1) * x(2) - b1; ...
+%     r2 * x(2) * (1 - x(2) / K2) - a2 * x(1) * x(2) - b2];
 
 [t, xa] = ode45(f, [0 years], [x0 y0]);
 
@@ -50,7 +50,7 @@ f = @(t,x) [r1*x(1) * (1 - x(1) / K1) - a1 * x(1) * x(2) - b1; ...
 profit = @(p, q) p(1) * q(:,1) + p(2) * q(:,2);
 
 prices = [p1 p2];
-% quantities = [b1 * xa(:,1) b2 * xa(:,2)];
+quantities = [b1 * xa(:,1) b2 * xa(:,2)];
 
 prof = profit(prices, quantities);
 
@@ -64,9 +64,9 @@ xlabel('Time (years)'), ylabel('Population'); legend('Blue','Fin'); hold off
 
 figure(2);
 
-% plot(t, prof); hold on
-% title('Profit level'); 
-% ylabel('Profit ($)'); xlabel('Time (years)'); hold off
-% 
-% fprintf('Profit:\t%1.2f\n',sum(prof));
-fprintf('Profit:\t%1.2f\n', years * (b1 * p1 + b2 * p2));
+plot(t, prof); hold on
+title('Profit level'); 
+ylabel('Profit ($)'); xlabel('Time (years)'); hold off
+
+fprintf('Profit:\t%1.2f\n',sum(prof));
+% fprintf('Profit:\t%1.2f\n', years * (b1 * p1 + b2 * p2));
