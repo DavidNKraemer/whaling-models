@@ -1,5 +1,6 @@
 classdef PopulationSimulator
     properties
+        % Model parameters
         r1 = 0.05;
         r2 = 0.08;
         K1 = 1.5e+5;
@@ -7,23 +8,42 @@ classdef PopulationSimulator
         a1 = 1.0e-8;
         a2 = 1.0e-8;
 
+        % Initial population levels
         blue_init
         fin_init
-        years = 50;
-        populations
-        interval 
+
+        % Symbolic representation of the model differential equations and relevant symbols
         diffeq1
         diffeq2
         eq_symbols
+
+        % Number of years during simulation
+        years = 50;
+        % populations stores the ODE system solution, while interval is the relevant time interval for the solution.
+        populations
+        interval
     end
     methods
-        function obj = PopulationSimulator(x0, y0, de1, de2, eqsyms)
+        % Class constructor. This is what is called to initialize a PopulationSimulator object.
+        % Arguments:
+        %   x0      -- the initial level of blue whales
+        %   y0      -- the initial level of fin whales
+        %   de1     -- the first differential equation
+        %   de2     -- the second differential equation
+        %   eqnsyms -- the symbols that express de1 and de2
+        function obj = PopulationSimulator(x0, y0, de1, de2, eqnsyms)
             obj.blue_init = x0;
             obj.fin_init = y0;
             obj.diffeq1 = de1;
             obj.diffeq2 = de2;
-            obj.eq_symbols = eqsyms;
+            obj.eq_symbols = eqnsyms;
         end
+
+        % Simulate the solution to the differential equations specified by the constructor. The default interval is 50 years, but this can be overwritten.
+        % Arguments:
+        %   obj     -- the class instance (this stores all of the local parameters)
+        % Returns:
+        %   [called for side effects]
         function simulate(obj)
             symbol_subs = @(pops) [pops(1) pops(2) obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             interval = [0 obj.years];
@@ -31,8 +51,15 @@ classdef PopulationSimulator
 
             f =  @(t, pops) double([subs(obj.diffeq1, obj.eq_symbols, symbol_subs(pops)); subs(obj.diffeq2, obj.eq_symbols, symbol_subs(pops))]);
 
-            [obj.interval, obj.populations] = ode45(f, interval, initials) 
+            [obj.interval, obj.populations] = ode45(f, interval, initials)
         end
+
+        % Compute the population level that maximizes the combined growth rate of blue and fin whales.
+        % Arguments:
+        %   obj             -- the class instance (this stores all of the local parameters)
+        % Retuns:
+        %   sol             -- (array) the optimal quantities of blue and fin whales
+        %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
         function [sol sensitivities] = compute_maximal_combined_growth(obj)
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             syms x y r1 r2 K1 K2 a1 a2;
@@ -57,18 +84,54 @@ classdef PopulationSimulator
                        float_unused = [float_unused float_params(j)];
                    end
                 end
-                
+
                 % compute the functions dx/dt, dy/dt with respect to the held parameter
                 % and then compute the sensitivities
                 f(sym_params(i)) = subs(sol, unused, float_unused);
                 sensitivities{i} = diff(f, sym_params(i)) * sym_params(i) ./ f(sym_params(i));
-            
+
                 % reset and repeat!
                 unused = [];
                 float_unused = [];
             end
         end
 
-    end
+        % Compute the feasible and sustainable population levels of blue and fin whales.
+        % Arguments:
+        %   obj             -- the class instance (this stores all of the local parameters)
+        % Retuns:
+        %   sol             -- (array) the optimal quantities of blue and fin whales
+        %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
+        function  compute_feasible_sustainable_region(obj)
+            float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
+            syms x y r1 r2 K1 K2 a1 a2;
+            sym_params = [r1 r2 K1 K2 a1 a2];
+            de1 = subs(obj.diffeq1, obj.eq_symbols, [x y sym_params]), x == 0;
+            de2 = subs(obj.diffeq2, obj.eq_symbols, [x y sym_params]), y == 0;
+            unused = [];
+            float_unused = [];
 
+            sensitivity = cell(6,1);
+            % compute the sensitivity functions with respect to each of the model parametersend
+            % sensitivity{i} is the sensitivity functions of x,y with respect to vars(i)
+            for i = 1:6
+                % hold one parameter as a variable, and plug in the oter five
+                for j = 1:6
+                   if j ~= i
+                       unused = [unused vars(j)];
+                       float_unused = [float_unused float_vars(j)];
+                   end
+                end
+
+                % compute the functions dx/dt, dy/dt with respect to the held parameter
+                % and then compute the sensitivities
+                f(vars(i)) = subs(X, unused, float_unused);
+                sensitivity{i} = diff(f, vars(i)) * vars(i) ./ f(vars(i));
+
+                % reset and repeat!
+                unused = [];
+                float_unused = [];
+            end
+        end
+    end
 end
