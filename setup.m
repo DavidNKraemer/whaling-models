@@ -1,9 +1,9 @@
 syms x y;
-syms v1 v2 v3 v4 v5 v6;
+syms r1 r2 K1 K2 a1 a2;
 
-eqn1 = v1 - (2 * v1) / v3 * x - v5 * y - v6 * y;
-eqn2 = v2 - (2 * v2) / v4 * y - v5 * x - v6 * x;
-eqnsyms = [x y v1 v2 v3 v4 v5 v6];
+eqn1 = r1*x - r1 / K1 * x^2 - a1 * y * x - a2 * y * x;
+eqn2 = r2*y - r2 / K2 * y^2 - a1 * x * y - a2 * x * y;
+eqnsyms = [x y r1 r2 K1 K2 a1 a2];
 
 pop = PopulationSimulator(1000, 1000, eqn1, eqn2, eqnsyms);
 pop.simulate()

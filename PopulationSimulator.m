@@ -1,4 +1,4 @@
-classdef PopulationSimulator
+classdef PopulationSimulator < handle
     properties
         % Model parameters
         r1 = 0.05;
@@ -39,7 +39,17 @@ classdef PopulationSimulator
             obj.eq_symbols = eqnsyms;
         end
 
-        % Simulate the solution to the differential equations specified by the constructor. The default interval is 50 years, but this can be overwritten.
+        function obj = set.populations(obj, pop)
+            obj.populations = pop;
+        end
+
+        function obj = set.interval(obj, interval)
+            obj.interval= interval;
+        end
+
+        % Simulate the solution to the differential equations specified by the
+        % constructor. The default interval is 50 years, but this can be
+        % overwritten.
         % Arguments:
         %   obj     -- the class instance (this stores all of the local parameters)
         % Returns:
@@ -49,9 +59,10 @@ classdef PopulationSimulator
             interval = [0 obj.years];
             initials = [obj.blue_init obj.fin_init];
 
-            f =  @(t, pops) double([subs(obj.diffeq1, obj.eq_symbols, symbol_subs(pops)); subs(obj.diffeq2, obj.eq_symbols, symbol_subs(pops))]);
+            f =  @(t, pops) double([subs(obj.diffeq1, obj.eq_symbols, symbol_subs(pops)); ...
+                                    subs(obj.diffeq2, obj.eq_symbols, symbol_subs(pops))]);
 
-            [obj.interval, obj.populations] = ode45(f, interval, initials)
+            [obj.interval, obj.populations] = ode45(f, interval, initials);
         end
 
         % Compute the population level that maximizes the combined growth rate of blue and fin whales.
@@ -102,31 +113,48 @@ classdef PopulationSimulator
         % Retuns:
         %   sol             -- (array) the optimal quantities of blue and fin whales
         %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
-        function  compute_feasible_sustainable_region(obj)
+        function [region, sensitivities] = compute_feasible_sustainable_region(obj)
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             syms x y r1 r2 K1 K2 a1 a2;
-            sym_params = [r1 r2 K1 K2 a1 a2];
-            de1 = subs(obj.diffeq1, obj.eq_symbols, [x y sym_params]), x == 0;
-            de2 = subs(obj.diffeq2, obj.eq_symbols, [x y sym_params]), y == 0;
+            sym_params = [x y r1 r2 K1 K2 a1 a2];
+
+            ineq1 = simplify(subs(obj.diffeq1, obj.eq_symbols, sym_params, x) / x) == 0;
+            ineq2 = simplify(subs(obj.diffeq2, obj.eq_symbols, sym_params, y) / y) == 0;
+            assume(x > 0);
+            assume(y > 0);
+
+            % Solve for the intersection of the sustainability curves
+            [A, B] = equationsToMatrix([ineq1, ineq2], [x, y]);
+            X = linsolve(A, B);
+
+            ineq3 = subs(ineq1, y, 0);
+            ineq4 = subs(ineq2, x, 0);
+
+            Y = solve(ineq1, x);
+
+            Z = solve(ineq2, y);
+
+            region = {X Y Z};
+
             unused = [];
             float_unused = [];
 
-            sensitivity = cell(6,1);
+            sensitivities = cell(6,1);
             % compute the sensitivity functions with respect to each of the model parametersend
             % sensitivity{i} is the sensitivity functions of x,y with respect to vars(i)
             for i = 1:6
                 % hold one parameter as a variable, and plug in the oter five
                 for j = 1:6
                    if j ~= i
-                       unused = [unused vars(j)];
-                       float_unused = [float_unused float_vars(j)];
+                       unused = [unused sym_params(j)];
+                       float_unused = [float_unused float_params(j)];
                    end
                 end
 
                 % compute the functions dx/dt, dy/dt with respect to the held parameter
                 % and then compute the sensitivities
-                f(vars(i)) = subs(X, unused, float_unused);
-                sensitivity{i} = diff(f, vars(i)) * vars(i) ./ f(vars(i));
+                f(sym_params(i)) = subs({X Y Z}, unused, float_unused);
+                sensitivities{i} = diff(f, sym_params(i)) * sym_params(i) ./ f(sym_params(i));
 
                 % reset and repeat!
                 unused = [];
