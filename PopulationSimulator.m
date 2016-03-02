@@ -113,7 +113,7 @@ classdef PopulationSimulator < handle
         % Retuns:
         %   sol             -- (array) the optimal quantities of blue and fin whales
         %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
-        function [region, sensitivities] = compute_feasible_sustainable_region(obj)
+        function [region sensitivities] = compute_feasible_sustainable_region(obj)
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             syms x y r1 r2 K1 K2 a1 a2;
             sym_params = [x y r1 r2 K1 K2 a1 a2];

@@ -6,4 +6,3 @@ eqn2 = r2*y - r2 / K2 * y^2 - a1 * x * y - a2 * x * y;
 eqnsyms = [x y r1 r2 K1 K2 a1 a2];
 
 pop = PopulationSimulator(1000, 1000, eqn1, eqn2, eqnsyms);
-pop.simulate()
