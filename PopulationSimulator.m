@@ -120,7 +120,7 @@ classdef PopulationSimulator < handle
 
             for i = 1:3
                 % call the sensitivity function found in sensitivity.m
-                sensitivities{i} = sensitivity(X, sym_params, float_params);
+                sensitivities{i} = sensitivity(region{i}, sym_params, float_params);
             end
         end
     end
