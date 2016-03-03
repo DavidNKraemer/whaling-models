@@ -40,6 +40,7 @@ classdef PopulationSimulator < handle
             obj.eq_symbols = eqnsyms;
         end
 
+        % Setter methods
         function obj = set.populations(obj, pop)
             obj.populations = pop;
         end
@@ -76,36 +77,16 @@ classdef PopulationSimulator < handle
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             syms x y r1 r2 K1 K2 a1 a2;
             sym_params = [r1 r2 K1 K2 a1 a2];
-            de1 = diff(subs(obj.diffeq1, obj.eq_symbols, [x y sym_params]), x) == 0;
-            de2 = diff(subs(obj.diffeq2, obj.eq_symbols, [x y sym_params]), y) == 0;
+            r = obj.diffeq1 + obj.diffeq2;
+            de1 = diff(subs(r, obj.eq_symbols, [x y sym_params]), x) == 0;
+            de2 = diff(subs(r, obj.eq_symbols, [x y sym_params]), y) == 0;
 
             [A, B] = equationsToMatrix([de1, de2], [x, y]);
             sol = linsolve(A, B);
+            
+            % call the sensitivity function found in sensitivity.m
+            sensitivities = sensitivity(sol, sym_params, float_params);
 
-            sensitivities = cell(6,1);
-            unused = [];
-            float_unused = [];
-
-            % compute the sensitivities functions with respect to each of the model parameters
-            % sensitivities{i} is the sensitivities functions of x,y with respect to sym_params(i)
-            for i = 1:6
-                % hold one parameter as a variable, and plug in the oter five
-                for j = 1:6
-                   if j ~= i
-                       unused = [unused sym_params(j)];
-                       float_unused = [float_unused float_params(j)];
-                   end
-                end
-
-                % compute the functions dx/dt, dy/dt with respect to the held parameter
-                % and then compute the sensitivities
-                f(sym_params(i)) = subs(sol, unused, float_unused);
-                sensitivities{i} = diff(f, sym_params(i)) * sym_params(i) ./ f(sym_params(i));
-
-                % reset and repeat!
-                unused = [];
-                float_unused = [];
-            end
         end
 
         % Compute the feasible and sustainable population levels of blue and fin whales.
@@ -117,7 +98,7 @@ classdef PopulationSimulator < handle
         function [region sensitivities] = compute_feasible_sustainable_region(obj)
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             syms x y r1 r2 K1 K2 a1 a2;
-            sym_params = [x y r1 r2 K1 K2 a1 a2];
+            sym_params = [r1 r2 K1 K2 a1 a2];
 
             ineq1 = simplify(subs(obj.diffeq1, obj.eq_symbols, sym_params, x) / x) == 0;
             ineq2 = simplify(subs(obj.diffeq2, obj.eq_symbols, sym_params, y) / y) == 0;
@@ -131,35 +112,15 @@ classdef PopulationSimulator < handle
             ineq3 = subs(ineq1, y, 0);
             ineq4 = subs(ineq2, x, 0);
 
-            Y = solve(ineq1, x);
-
-            Z = solve(ineq2, y);
+            Y = solve(ineq3, x);
+            Z = solve(ineq4, y);
 
             region = {X Y Z};
+            sensitivities = cell(3,1);
 
-            unused = [];
-            float_unused = [];
-
-            sensitivities = cell(6,1);
-            % compute the sensitivity functions with respect to each of the model parametersend
-            % sensitivity{i} is the sensitivity functions of x,y with respect to vars(i)
-            for i = 1:6
-                % hold one parameter as a variable, and plug in the oter five
-                for j = 1:6
-                   if j ~= i
-                       unused = [unused sym_params(j)];
-                       float_unused = [float_unused float_params(j)];
-                   end
-                end
-
-                % compute the functions dx/dt, dy/dt with respect to the held parameter
-                % and then compute the sensitivities
-                f(sym_params(i)) = subs({X Y Z}, unused, float_unused);
-                sensitivities{i} = diff(f, sym_params(i)) * sym_params(i) ./ f(sym_params(i));
-
-                % reset and repeat!
-                unused = [];
-                float_unused = [];
+            for i = 1:3
+                % call the sensitivity function found in sensitivity.m
+                sensitivities{i} = sensitivity(X, sym_params, float_params);
             end
         end
     end
