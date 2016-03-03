@@ -1,3 +1,4 @@
+% This is a way to keep track of all the moving pieces
 classdef PopulationSimulator < handle
     properties
         % Model parameters
