@@ -78,8 +78,8 @@ classdef PopulationSimulator < handle
             syms x y r1 r2 K1 K2 a1 a2;
             sym_params = [r1 r2 K1 K2 a1 a2];
             r = obj.diffeq1 + obj.diffeq2;
-            de1 = diff(subs(r, obj.eq_symbols, [x y sym_params]), x) == 0;
-            de2 = diff(subs(r, obj.eq_symbols, [x y sym_params]), y) == 0;
+            de1 = diff(subs(r, obj.eq_symbols, [sym_params]), x) == 0;
+            de2 = diff(subs(r, obj.eq_symbols, [sym_params]), y) == 0;
 
             [A, B] = equationsToMatrix([de1, de2], [x, y]);
             sol = linsolve(A, B);

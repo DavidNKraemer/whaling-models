@@ -1,5 +1,5 @@
 function sensitivities = sensitivity(solution, sym_params, float_params)
-len = length(float_params)
+len = length(float_params);
 
 sensitivities = cell(len, 1);
 
