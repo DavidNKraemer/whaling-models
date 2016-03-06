@@ -9,6 +9,10 @@ classdef PopulationSimulator < handle
         a1 = 1.0e-8;
         a2 = 1.0e-8;
 
+        % whales killed per year
+        b1 = 0.0;
+        b2 = 0.0;
+
         % Initial population levels
         blue_init
         fin_init
@@ -57,12 +61,13 @@ classdef PopulationSimulator < handle
         % Returns:
         %   [called for side effects]
         function simulate(obj)
-            symbol_subs = @(pops) [pops(1) pops(2) obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
+            syms x y;
+            symbol_subs = @(pops) [pops(1) pops(2) obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2 ];
             interval = [0 obj.years];
             initials = [obj.blue_init obj.fin_init];
 
-            f =  @(t, pops) double([subs(obj.diffeq1, obj.eq_symbols, symbol_subs(pops)); ...
-                                    subs(obj.diffeq2, obj.eq_symbols, symbol_subs(pops))]);
+            f =  @(t, pops) double([subs(obj.diffeq1, [x y obj.eq_symbols], symbol_subs(pops)); ...
+                                    subs(obj.diffeq2, [x y obj.eq_symbols], symbol_subs(pops))]);
 
             [obj.interval, obj.populations] = ode45(f, interval, initials);
         end
@@ -92,7 +97,7 @@ classdef PopulationSimulator < handle
         % Compute the feasible and sustainable population levels of blue and fin whales.
         % Arguments:
         %   obj             -- the class instance (this stores all of the local parameters)
-        % Retuns:
+        % Returns
         %   sol             -- (array) the optimal quantities of blue and fin whales
         %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
         function [region sensitivities] = compute_feasible_sustainable_region(obj)
@@ -100,8 +105,8 @@ classdef PopulationSimulator < handle
             syms x y r1 r2 K1 K2 a1 a2;
             sym_params = [r1 r2 K1 K2 a1 a2];
 
-            ineq1 = simplify(subs(obj.diffeq1, obj.eq_symbols, sym_params, x) / x) == 0;
-            ineq2 = simplify(subs(obj.diffeq2, obj.eq_symbols, sym_params, y) / y) == 0;
+            ineq1 = simplify(subs(obj.diffeq1, obj.eq_symbols, sym_params, x) / x) == 0
+            ineq2 = simplify(subs(obj.diffeq2, obj.eq_symbols, sym_params, y) / y) == 0
             assume(x > 0);
             assume(y > 0);
 
