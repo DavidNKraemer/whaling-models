@@ -66,6 +66,7 @@ classdef PopulationSimulator < handle
             interval = [0 obj.years];
             initials = [obj.blue_init obj.fin_init];
 
+            % ODE system needed for ode45
             f =  @(t, pops) double([subs(obj.diffeq1, [x y obj.eq_symbols], symbol_subs(pops)); ...
                                     subs(obj.diffeq2, [x y obj.eq_symbols], symbol_subs(pops))]);
 
@@ -76,7 +77,7 @@ classdef PopulationSimulator < handle
         % Arguments:
         %   obj             -- the class instance (this stores all of the local parameters)
         % Retuns:
-        %   sol             -- (array) the optimal quantities of blue and fin whales
+        %   sol             -- (cell) the optimal quantities of blue and fin whales, along with dx/dt, dy/dt, and the overall growth rate
         %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
         function [sol sensitivities] = compute_maximal_combined_growth(obj)
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
@@ -87,10 +88,14 @@ classdef PopulationSimulator < handle
             de2 = diff(subs(r, obj.eq_symbols, [sym_params]), y) == 0;
 
             [A, B] = equationsToMatrix([de1, de2], [x, y]);
-            sol = linsolve(A, B);
+            populations = linsolve(A, B);
+            sol = {populations obj.diffeq1 obj.diffeq2 r};
+            sensitivities = cell(4,1);
             
             % call the sensitivity function found in sensitivity.m
-            sensitivities = sensitivity(sol, sym_params, float_params);
+            for i = 1:4
+                sensitivities{i} = sensitivity(sol{i}, sym_params, float_params);
+            end
 
         end
 
@@ -101,12 +106,13 @@ classdef PopulationSimulator < handle
         %   sol             -- (array) the optimal quantities of blue and fin whales
         %   sensitivities   -- (cell) sensitivitiy functions of solutions with respect to each model parameter
         function [region sensitivities] = compute_feasible_sustainable_region(obj)
+            warning('off'); % matlab doesn't like subs(ineq1, y, 0) for some reason
             float_params = [obj.r1 obj.r2 obj.K1 obj.K2 obj.a1 obj.a2];
             syms x y r1 r2 K1 K2 a1 a2;
             sym_params = [r1 r2 K1 K2 a1 a2];
 
-            ineq1 = simplify(subs(obj.diffeq1, obj.eq_symbols, sym_params, x) / x) == 0
-            ineq2 = simplify(subs(obj.diffeq2, obj.eq_symbols, sym_params, y) / y) == 0
+            ineq1 = simplify(subs(obj.diffeq1, obj.eq_symbols, sym_params, x) / x) == 0;
+            ineq2 = simplify(subs(obj.diffeq2, obj.eq_symbols, sym_params, y) / y) == 0;
             assume(x > 0);
             assume(y > 0);
 
