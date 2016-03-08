@@ -17,16 +17,16 @@ f = @(t, pops) double([subs(eqn1 - bx(pops(1)), [x y eqnsyms], [pops(1) pops(2) 
 
 profit = @(pops) px * bx(pops(:,1)) + py * by(pops(:,2));
 
-%figure(1);
-%plot(time, populations);
-%figure(2);
-%plot(time, profit(populations));
+figure(1);
+plot(time, populations);
+figure(2);
+plot(time, profit(populations));
 
 sustainable = profit(populations);
 net_profit = cumsum(sustainable) - greedy;
 
 
 
-fprintf('Greedy profit:\t%E\n', [px py] * init.');
-fprintf('MWP profit:\t\t%E\t(%d years)\n', sum(sustainable), years);
+%fprintf('Greedy profit:\t%E\n', [px py] * init.');
+%fprintf('MWP profit:\t\t%E\t(%d years)\n', sum(sustainable), years);
 end
