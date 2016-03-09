@@ -11,4 +11,82 @@
 To get started, type one of these: helpwin, helpdesk, or demo.
 For product information, visit www.mathworks.com.
  
->> >> >> >> >> >> >> 
+>> >> >> >> >> >> >> >> [Warning:
+Connection to the X11 Display Server (:0.0) has been lost.
+No more graphics windows can no longer be displayed in this session.
+Graphics Objects can still be printed, and all commands should still work.
+We recommend that you try to save your current session and exit.] 
+>> >> [Warning:
+Connection to the X11 Display Server (:0.0) has been lost.
+No more graphics windows can no longer be displayed in this session.
+Graphics Objects can still be printed, and all commands should still work.
+We recommend that you try to save your current session and exit.] 
+Invalid MIT-MAGIC-COOKIE-1 key
+------------------------------------------------------------------------
+       Segmentation violation detected at Tue Mar  8 04:16:36 2016
+------------------------------------------------------------------------
+
+Configuration:
+  Crash Decoding     : Disabled
+  Current Visual     : 0x23 (class 4, depth 24)
+  Default Encoding   : UTF-8
+  GNU C Library      : 2.19 stable
+  MATLAB Architecture: glnxa64
+  MATLAB Root        : /net/matlab2013a
+  MATLAB Version     : 8.1.0.604 (R2013a)
+  Operating System   : Linux 3.16.0-4-amd64 #1 SMP Debian 3.16.7-ckt20-1+deb8u3 (2016-01-17) x86_64
+  Processor ID       : x86 Family 6 Model 42 Stepping 7, GenuineIntel
+  Window System      : The X.Org Foundation (11604000), display :0.0
+
+Fault Count: 1
+
+
+Abnormal termination:
+Segmentation violation
+
+Register State (from fault):
+  RAX = 0000000000000000  RBX = 00007f74c8038150
+  RCX = 0000000001b73550  RDX = 00007f74dcdbcfc0
+  RSP = 00007f74d5761710  RBP = 00007f74d5761720
+  RSI = 0000000001b73518  RDI = 00007f74c8038150
+
+   R8 = 0000000000000000   R9 = 0000000000000002
+  R10 = 00007f74dcdbcfc0  R11 = 00007f74e6e47790
+  R12 = 0000000001b6eb00  R13 = 00007f74ca30b3b0
+  R14 = 00007f74d5761870  R15 = 0000000000000008
+
+  RIP = 00007f74dcabf97b  EFL = 0000000000010202
+
+   CS = 0033   FS = 0000   GS = 0000
+
+Stack Trace (from fault):
+[  0] 0x00007f74dcabf97b           /net/matlab2013a/bin/glnxa64/libmwuix.so+00551291
+[  1] 0x00007f74dcabcee0           /net/matlab2013a/bin/glnxa64/libmwuix.so+00540384
+[  2] 0x00007f74dd99187a            /net/matlab2013a/bin/glnxa64/libmwhg.so+03725434
+[  3] 0x00007f74dd991f6e            /net/matlab2013a/bin/glnxa64/libmwhg.so+03727214
+[  4] 0x00007f74dd9a9c48            /net/matlab2013a/bin/glnxa64/libmwhg.so+03824712
+[  5] 0x00007f74dd9a9b26            /net/matlab2013a/bin/glnxa64/libmwhg.so+03824422
+[  6] 0x00007f74dd998fc6            /net/matlab2013a/bin/glnxa64/libmwhg.so+03755974
+[  7] 0x00007f74dd995d39            /net/matlab2013a/bin/glnxa64/libmwhg.so+03743033
+[  8] 0x00007f74dda6fe59            /net/matlab2013a/bin/glnxa64/libmwhg.so+04636249
+[  9] 0x00007f74dda6ff04            /net/matlab2013a/bin/glnxa64/libmwhg.so+04636420
+[ 10] 0x00007f74ddbfa462            /net/matlab2013a/bin/glnxa64/libmwhg.so+06251618
+[ 11] 0x00007f74e95ff74b      /net/matlab2013a/bin/glnxa64/libmwservices.so+01918795 _Z26svWS_CommitDatabaseUpdates27svCommitDatabaseUpdatesType+00000219
+[ 12] 0x00007f74e95ee140      /net/matlab2013a/bin/glnxa64/libmwservices.so+01847616 _Z25svWS_ProcessPendingEventsiib+00000640
+[ 13] 0x00007f74e8f035ef           /net/matlab2013a/bin/glnxa64/libmwmcr.so+00316911
+[ 14] 0x00007f74e8f03f5c           /net/matlab2013a/bin/glnxa64/libmwmcr.so+00319324
+[ 15] 0x00007f74e8efd592           /net/matlab2013a/bin/glnxa64/libmwmcr.so+00292242
+[ 16] 0x00007f74e708c0a4              /lib/x86_64-linux-gnu/libpthread.so.0+00032932
+[ 17] 0x00007f74e6dc187d                    /lib/x86_64-linux-gnu/libc.so.6+00952445 clone+00000109
+
+
+If this problem is reproducible, please submit a Service Request via:
+    http://www.mathworks.com/support/contact_us/
+
+A technical support engineer might contact you with further information.
+
+Thank you for your help.** This crash report has been saved to disk as /home/kraemerd17/matlab_crash_dump.6986-1 **
+
+
+
+MATLAB is exiting because of fatal error

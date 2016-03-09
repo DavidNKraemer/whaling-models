@@ -6,7 +6,7 @@ run('setup.m')
 lw = 2; % linewidth
 fs = 14; % fontsize
 set(0,'DefaultAxesFontSize',fs)
-cmap_string = 'summer';
+cmap_string = 'gray';
 area_color = [0.4 0.7 0.7]; % fill color
 
 % Generate a plot of the feasible/sustainable region
@@ -67,10 +67,10 @@ set(gca, 'CLim', [0, 1.5e+4]);
 
 figure(3);
 
-data = importdata('iwc-mwq-image.mat');
+data = importdata('data-test.mat');
 xmax = fK1;
 ymax = fK2;
-n = 10;
+n = 32;
 xarr = xmax * [1:n] / n;
 yarr = ymax * [1:n] / n;
 image(xarr, yarr, data, 'CDataMapping', 'scaled'); hold on;

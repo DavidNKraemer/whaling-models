@@ -20,7 +20,7 @@ ind = IndustrySimulator(1000, 1000, eqn1, eqn2, eqnsyms);
 % ysub = subs(a{1}(2), eqnsyms, floatsyms);
 % 
 % for i = 1:4
-\
+
 %    fprintf('\n\nNext.\n\n');
 %    for j = 1:6 
 %        disp(eqnsyms(j));
