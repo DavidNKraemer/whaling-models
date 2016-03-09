@@ -12,3 +12,9 @@ parameters.
 * `proof_of_concept.m` uses `ode45` to solve the numerical differential
   equations over time, with plots.
 * `project_description.pdf` is the prompt for this project.
+
+# Need sensitivities for
+
+* (feasible/sustainable) Total population wrt competition parameter
+* (MWP) Sensitivity-like things
+* (MSP) Sensitivity-like things
